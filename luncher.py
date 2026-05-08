@@ -458,9 +458,9 @@ class Server:
                 os.mkdir(os.path.join(config_path, "log"))
             except Exception as e:
                 error(f"Error occurred while creating configuration '{colored(name, rgb('lightcyan'))}': {e}")
-            info(f"Configuration '{colored(name, rgb('lightcyan'))}' created successfully (copy default configuration)")
+            info(f"Configuration [{colored(name, rgb('lightcyan'))}] created successfully (copy default configuration)")
         else:
-            error(f"Configuration '{colored(name, rgb('lightcyan'))}' already exists")
+            error(f"Configuration [{colored(name, rgb('lightcyan'))}] already exists")
 
 
     def getlog(self, date = None):
@@ -476,7 +476,7 @@ class Server:
                 print(date)
         else:
             try:
-                print(f"=== Log for configuration '{colored(str(self.config), rgb('lightcyan'), attrs=['bold'])}' on date '{colored(date, rgb('lightcyan'))}' ===")
+                print(f"=== Log for configuration [{colored(str(self.config), rgb('lightcyan'), attrs=['bold'])}] on date [{colored(date, rgb('lightcyan'))}] ===")
                 with open(os.path.join(self.config.link, "log", date + ".log"), "r", encoding="utf-8") as f:
                     log = f.read()
                     print(log)
