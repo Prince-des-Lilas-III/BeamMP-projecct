@@ -320,7 +320,7 @@ class Config:
         self.printConfig()
         info("Starting server...")
         FolderLink = os.path.abspath(os.path.join(self.link))
-        resultat = subprocess.run([os.path.abspath("BeamMP-Server.exe"), "--config=" + "ServerConfig.toml", "--working-directory=" + FolderLink], stdout=subprocess.PIPE,stderr=subprocess.PIPE, text=True) #, capture_output=True
+        resultat = subprocess.run([os.path.abspath("BeamMP-Server.exe"), "--working-directory=" + FolderLink, "--config=ServerConfig.toml"], stdout=subprocess.PIPE,stderr=subprocess.PIPE, text=True) #, capture_output=True
         # info(f"Result of server execution: {resultat}")
         print(resultat.stdout)
         shutil.copy(os.path.abspath("server.log"), os.path.abspath(os.path.join(self.link, "log", datetime.now().strftime("%d-%m-%Y %H-%M-%S") + ".log"))) 
@@ -351,17 +351,16 @@ class Server:
         # Server console start
         
         self.execute("clear")
-        print(colored("Welcome to the BeamMP Server Launcher!", "cyan", attrs=["bold"]))
 
         # Charge la dernière configuration utilisée
 
         lastConfig = self.GeneralData.get("lastServeurConfig", "")
         if lastConfig in self.config:
             self.config = self.config[lastConfig]
-            info(f"Last configuration '{colored(str(self.config), rgb('lightcyan'))}' loaded successfully")
+            info(f"Last configuration [{colored(str(self.config), rgb('lightcyan'))}] loaded successfully")
         else:
             self.config = self.config.get("default", None)
-            warn("No last configuration found, configuration default used")
+            warn(f"No last configuration found, configuration [{colored('default', rgb('lightcyan'))}] used")
 
         # Initialize server console loop
         while True:
@@ -392,11 +391,11 @@ class Server:
                 print("Usage: config load [config_name]")
             else:
                 self.config = self.loadConfig(os.path.join("Config", data[0]))
-                print(f"Configuration '{str(self.config)}' chargée avec succès")
+                print(f"Configuration [{colored(str(self.config), rgb('lightcyan'))}] chargée avec succès")
         elif cmd == "regenerateTOML":
             if type(self.config) == Config:
                 self.config.setTOML()
-                print(f"Configuration TOML régénérée pour '{str(self.config)}'")
+                print(f"Configuration TOML régénérée pour [{colored(str(self.config), rgb('lightcyan'))}]")
             else:
                 error("No configuration loaded")
         elif cmd == "start":
@@ -572,6 +571,7 @@ class Server:
                 print(f"Usage: clear")
             else:
                 print("\033c", end="")
+                print(colored("Welcome to the BeamMP Server Launcher!", "cyan", attrs=["bold"]))
         elif command == "help":
             if len(data) > 0 and data[0] == "-help":
                 print(f"Affiche la liste des commandes disponibles")
