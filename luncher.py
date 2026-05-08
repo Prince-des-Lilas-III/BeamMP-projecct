@@ -324,7 +324,7 @@ class Config:
         shutil.copy(os.path.abspath(os.path.join(self.link, "ServerConfig.toml")), os.path.abspath("../ServerConfig.toml")) # Déplace le fichier de configuration généré à la racine du projet
         
         info("Starting server...")
-        resultat = subprocess.run(["../BeamMP-Server.exe", "--config=" + "ServerConfig.toml", "--working-directory=" + os.path.abspath(os.path.join(self.link))], stdout=subprocess.PIPE,stderr=subprocess.PIPE, text=True) #, capture_output=True
+        resultat = subprocess.run(["Luncher/BeamMP-Server.exe", "--config=" + "ServerConfig.toml", "--working-directory=" + os.path.abspath(os.path.join(self.link))], stdout=subprocess.PIPE,stderr=subprocess.PIPE, text=True) #, capture_output=True
         # info(f"Result of server execution: {resultat}")
         print(resultat.stdout)
         shutil.copy(os.path.abspath("server.log"), os.path.abspath(os.path.join(self.link, "log", datetime.now().strftime("%d-%m-%Y %H-%M-%S") + ".log"))) 
