@@ -471,7 +471,7 @@ class Server:
                     folder_path = os.path.join(self.config.link, "log", folder)
                     if os.path.isfile(folder_path):
                         listlog.append(f"[{colored(os.path.basename(folder_path)[:-4], rgb('lightyellow'))}]")
-            print(f"List of logs for configuration '{colored(str(self.config), rgb('lightcyan'), attrs=['bold'])}':")
+            print(f"List of logs for configuration [{colored(str(self.config), rgb('lightcyan'), attrs=['bold'])}]:")
             for date in listlog:
                 print(date)
         else:
