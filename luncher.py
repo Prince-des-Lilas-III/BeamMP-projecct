@@ -424,7 +424,7 @@ class Server:
         elif cmd == "save":
             if type(self.config) == Config:
                 self.config.saveData()
-                info(f"Configuration '{colored(str(self.config), rgb('lightcyan'))}' saved successfully")
+                info(f"Configuration [{colored(str(self.config), rgb('lightcyan'))}] saved successfully")
             else:
                 error("No configuration loaded")
         elif cmd == "delete":
