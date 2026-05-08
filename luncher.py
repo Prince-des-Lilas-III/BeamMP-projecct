@@ -318,13 +318,9 @@ class Config:
     def start(self):
         print(f"Starting server with configuration:")
         self.printConfig()
-        if not(os.path.exists(os.path.abspath(os.path.join(self.link, "ServerConfig.toml")))):
-            self.setTOML()
-            self.error = f"self.link: {self.link}, ServerConfig.toml not found, generating configuration file..."
-        shutil.copy(os.path.abspath(os.path.join(self.link, "ServerConfig.toml")), os.path.abspath("../ServerConfig.toml")) # Déplace le fichier de configuration généré à la racine du projet
-        
         info("Starting server...")
-        resultat = subprocess.run(["Luncher/BeamMP-Server.exe", "--config=" + "ServerConfig.toml", "--working-directory=" + os.path.abspath(os.path.join(self.link))], stdout=subprocess.PIPE,stderr=subprocess.PIPE, text=True) #, capture_output=True
+        FolderLink = os.path.abspath(os.path.join(self.link))
+        resultat = subprocess.run([os.path.abspath("BeamMP-Server.exe"), "--config=" + "ServerConfig.toml", "--working-directory=" + FolderLink], stdout=subprocess.PIPE,stderr=subprocess.PIPE, text=True) #, capture_output=True
         # info(f"Result of server execution: {resultat}")
         print(resultat.stdout)
         shutil.copy(os.path.abspath("server.log"), os.path.abspath(os.path.join(self.link, "log", datetime.now().strftime("%d-%m-%Y %H-%M-%S") + ".log"))) 
