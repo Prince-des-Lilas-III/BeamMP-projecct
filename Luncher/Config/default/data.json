@@ -1,0 +1,24 @@
+{
+    "name": "BeamMP Server",
+    "ip": "::",
+    "port": 30814,
+    "maxPlayers": 8,
+    "maxVehicles": 1,
+    "allowGuest": true,
+    "logChat": true,
+    "debug": false,
+    "informationPacket": true,
+    "tags": [
+        "BeamMP",
+        "Multiplayer"
+    ],
+    "map": "/levels/gridmap_v2/info.json",
+    "description": "BeamMp Server",
+    "resourceFolder": "luncher\\Config\\default\\Resources",
+    "modsFolder": "mods",
+    "enableMod": false,
+    "ImScaredOfUpdates": true,
+    "UpdateReminderTime": "30s",
+    "authKey": "871f304b-e271-4c8d-8cdd-4790ae04700d",
+    "private": true
+}

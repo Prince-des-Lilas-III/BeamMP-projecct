@@ -1,0 +1,18 @@
+Command,Description,Usage,Category
+clear,Efface l'écran de la console,clear,System
+colorText,Affiche un message coloré dans la console,colorText [message] [color],Utility
+config, Gère les configurations du serveur,config [delete|list|load|log|print|regenerateTOML|save|start|update] [args],System
+date,Affiche la date et l'heure actuelles,date,System
+debug,Affiche un message en mode debug dans la console,debug [message] ,System
+doc,Affiche la documentation officiel de BeamMP,doc,System
+error,Affiche un message en mode error dans la console,error [message] ,System
+exit,Quitte l'application serveur,exit,System
+Hello_World,Affiche le message "Hello World!",Hello_World,System
+help,Affiche la liste des commandes disponibles,help,System
+info,Affiche un message en mode info dans la console,info [message] ,System
+mods,Gère les mods du serveur,mods [add|remove|rename] [mod_name] [new_name],System
+new,Crée une nouvelle configuration de serveur,new [config_name],System
+print,Affiche un message dans la console,print [message],Utility
+status,Affiche les informations de statut du serveur,status,System
+test,Affiche les options passées à la commande,test [options],Debug
+warn,Affiche un message en mode warning dans la console,warn [message] ,System
