@@ -1,1 +1,11 @@
-
+datetime
+socket
+csv
+shlex
+os
+json
+colorama
+shutil
+subprocess
+tabulate
+termcolor
