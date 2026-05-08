@@ -12,7 +12,7 @@ from termcolor import colored
 
 
 # Définitions du chemin absolu actuel du projet
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(os.path.abspath(os.path.join("Luncher")))
 
 def getIP():
     """Récupère l'adresse IP de la machine hôte.
