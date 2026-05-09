@@ -7,7 +7,7 @@ Bienvenue sur mon projet (Oui je suis français et oui mon anglais est nul `;(` 
 
 ### Comment utiliser mon luncher ? (How start my luncher ?):
 * Installer le projet : <br>`jsp`
-* Installer les dépendance : <br>`ip install -r requirements.txt`
+* Installer les dépendance : <br>`pip install -r requirements.txt`
 
 
 ### Liste des commmandes (command list):
