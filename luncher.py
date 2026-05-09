@@ -9,10 +9,71 @@ import shutil
 import subprocess
 from tabulate import tabulate
 from termcolor import colored
+import ast
 
 
 # Définitions du chemin absolu actuel du projet
 os.chdir(os.path.abspath(os.path.join("Luncher")))
+
+
+def setType(value):
+    """Convertit une donnée en son type de données approprié.
+
+    Args:
+        value : Donnée à convertir
+
+    Returns:
+        str, int, float, bool, list: Valeur convertie dans son type approprié
+    """
+    try:
+        value = str(value)
+    except Exception:
+        pass
+    try:
+        if (value.lower() == "true"):
+            value = True
+        elif (value.lower() == "false"):
+            value = False
+    except Exception:
+        pass
+    try:
+        if (int(value) == float(value)):
+            value = int(value)
+        else:
+            value = float(value)
+    except Exception:
+        pass
+    try:
+        if (value.startswith("[") and value.endswith("]")):
+            value = ast.literal_eval(value)
+    except Exception:
+        pass
+    try:
+        if (value.startswith("{") and value.endswith("}")):
+            value = ast.literal_eval(value)
+    except Exception:
+        pass
+    try:
+        if (value.startswith("(") and value.endswith(")")):
+            value = ast.literal_eval(value)
+    except Exception:
+        pass
+
+    return value
+
+def encodeType(data):
+    """Retourne la données colorée et formatée pour l'affichage dans la console en fonction de son type."""
+    data = setType(data)
+    if type(data) == str:
+        return colored('"' + data + '"', rgb("lightgreen"))
+    elif type(data) == bool:
+        return colored(str(data), rgb("blue"))
+    elif type(data) in [int, float]:
+        return colored(str(data), rgb("lightred"))
+    elif type(data) == list:
+        return colored(str(data), rgb("lightyellow"))
+    else:
+        return colored(str(data), rgb("white"))
 
 def getIP():
     """Récupère l'adresse IP de la machine hôte.
@@ -370,7 +431,7 @@ class Server:
                 print("\nInterrupted by user")
                 break
             except Exception as e:
-                error(f"An error occurred: {e}")
+                error(e)
 
     def reloadMods(self):
         """Recharge la liste des mods à partir du dossier mods de la configuration.
@@ -499,59 +560,112 @@ class Server:
 
     
 
-    def display_help(self):
+    def display_help(self, data=[], option={}):
         """Affiche la liste des commandes disponibles sous forme de tableau.
 
         Lit le fichier command.csv et affiche un tableau formaté avec tabulate.
         Gère les erreurs de fichier et affiche des messages appropriés.
         """
-        try:
-            print(colored("Available commands:", "cyan"))
-            with open("command.csv", "r", encoding="utf-8") as f:
-                reader = csv.reader(f)
-                commands = list(reader)
-                if len(commands) > 0:
-                    headers = commands[0]
-                    rows = commands[1:]
-                    print(tabulate(rows, headers=headers, tablefmt="grid"))
-                    print(f"For more information on a specific command, use {colored('command_name', rgb('yellow'))} -help")
-                else:
-                    print("Aucune commande disponible")
-        except FileNotFoundError:
-            print("Fichier command.csv introuvable")
-        except Exception as e:
-            print(f"Erreur lors de la lecture du fichier: {e}")
+        
+        if "help" in option.keys() and option["help"]:
+            print(f"Affiche la liste des commandes disponibles")
+            print(f"Usage: help")
+        else:
+            try:
+                print(colored("Available commands:", "cyan"))
+                with open("command.csv", "r", encoding="utf-8") as f:
+                    reader = csv.reader(f)
+                    commands = list(reader)
+                    if len(commands) > 0:
+                        headers = commands[0]
+                        rows = commands[1:]
+                        print(tabulate(rows, headers=headers, tablefmt="grid"))
+                        print(f"For more information on a specific command, use [{colored('command_name', rgb('yellow'))}] -help")
+                    else:
+                        print("Aucune commande disponible")
+            except FileNotFoundError:
+                print("Fichier command.csv introuvable")
+            except Exception as e:
+                print(f"Erreur lors de la lecture du fichier: {e}")
 
-    def test_command(self, command, data):
+    def test_command(self, data=[], option={}):
         """Affiche les informations de débogage pour une commande.
 
         Args:
-            command (str): Nom de la commande
             data (list): Liste des arguments passés à la commande
+            option (dict): Dictionnaire des options passées à la commande
         """
-        print(colored("\n=== TEST COMMAND ===", "magenta"))
-        print(colored(f"Commande: ", "cyan") + colored(f"{command}", "green"))
-        if len(data) > 0:
-            print(colored(f"Nombre d'options: ", "cyan") + colored(f"{len(data)}", "yellow"))
-            print(colored("Options:", "cyan"))
-            for i, option in enumerate(data, 1):
-                print(f"  [{i}] {colored(option, 'white')}")
+        debug("Test command executed with data: " + str(data) + " and options: " + str(option))
+        if "help" in option.keys() and option["help"]:
+            print(f"Affiche les informations de débogage pour une commande")
+            print(f"Usage: test [{colored('command', 'yellow')}] [{colored('data', 'yellow')}] [{colored('...', 'yellow')}] [{colored('options', rgb('purple'))}] [{colored('...', rgb('purple'))}]")
         else:
-            print(colored("Aucune option fournie", "yellow"))
-        print(colored("===================\n", "magenta"))
-        print(os.path.join("Config", "default", "ServerConfig.toml"))
+            assert len(data) > 0, "No command provided for test"
+            print(colored("\n=== TEST COMMAND ===", "magenta"))
+            print(colored(f"Commande: ", "cyan") + colored(f"{data[0]}", "green"))
+            if len(data[1:]) > 0:
+                print(colored(f"Nombre de données: ", "cyan") + colored(f"{len(data[1:])}", "yellow"))
+                print(colored("Données:", "cyan"))
+                for i, donne in enumerate(data[1:], 1):
+                    print(f"  [{i}] {encodeType(donne)}")
+            else:
+                print(colored("Aucune donnée fournie", "yellow"))
+            if len(option.keys()) > 0:
+                print(colored(f"Nombre d'options: ", "cyan") + colored(f"{len(option.keys())}", "yellow"))
+                print(colored("Options:", "cyan"))
+                for i, (key, value) in enumerate(option.items(), 1):
+                    print(f"  [{i}] {colored(key, 'white')}: {encodeType(value)}")
+            else:
+                print(colored("Aucune option fournie", "yellow"))
 
-    def color_text(self, text="", color = "white"):
+            print(colored("===================\n", "magenta"))
+
+    def color_text(self, data = ["", "white"], option={"print": False, "console": False}):
         """Colorie le texte avec la couleur spécifiée.
 
         Args:
-            text (str): Texte à colorier
-            color (tuple): Tuple RGB (r, g, b) pour la couleur
+            data (list): Liste contenant le texte à colorier et la couleur (data[0] = texte, data[1] = couleur)
+            option (dict): Dictionnaire des options, si "print" est True, le texte sera coloré en blanc dans la console
 
         Returns:
             str: Texte coloré
         """
-        return colored(text, color)
+        # debug("color_text command executed with data: " + str(data) + " and options: " + str(option))
+        if (not("print" in option.keys())):
+            option["print"] = False
+        elif (option["print"]):
+            data.append("white")
+        # debug("color_text command after processing options has data: " + str(data) + " and options: " + str(option))
+
+        assert len(data) == 2 or (len(data) == 1 and option["print"]), "Bad Request: colorText command requires 2 data arguments (text and color)"
+        
+        text = data[0]
+        color = rgb(data[1])
+
+        if ("console" in option.keys() and option["console"]):
+            info(colored(text, color))
+        else:
+            return colored(text, color)
+    
+    def cmd_clear(self, data=[], option={}):
+        """Efface la console.
+        """
+        if "help" in option.keys() and option["help"]:
+            print(f"Clear the console")
+            print(f"Usage: clear")
+        else:
+            print("\033c", end="")
+            print(colored("Welcome to the BeamMP Server Launcher!", "cyan", attrs=["bold"]))
+    
+    def exit(self, data=[], option={}):
+        """Quitte le programme.
+        """
+        if "help" in option.keys() and option["help"]:
+            print(f"Quit the program")
+            print(f"Usage: exit")
+        else:
+            info("Exiting program...")
+            exit()
 
     def execute(self, cmd):
         """Traite et exécute une commande utilisateur.
@@ -562,65 +676,51 @@ class Server:
         Args:
             cmd (str): Commande complète saisie par l'utilisateur
         """
-        cmd = shlex.split(cmd)
-        command = cmd[0]
-        data = cmd[1:]
+
+        def get_command_info(cmd):
+            '''Parse la commande pour extraire la commande principale, les arguments et les options.'''
+            cmd = shlex.split(cmd)
+            command = cmd[0]
+            alldata = cmd[1:]
+            data = []
+            option = {}
+            for item in alldata:
+                item = item.lower()
+                if item.startswith("-"):
+                    item = item[1:]
+                    item = item.split("=")
+                    key = item[0]
+                    if len(item) > 1:
+                        option[key] = setType(item[1])
+                    else:
+                        option[key] = True
+                else:
+                    data.append(setType(item))
+                    
+
+            return command, data, option
+
+        command, data, option = get_command_info(cmd)
+    
         if command == "clear":
-            if len(data) > 0 and data[0] == "-help":
-                print(f"Clear the console")
-                print(f"Usage: clear")
-            else:
-                print("\033c", end="")
-                print(colored("Welcome to the BeamMP Server Launcher!", "cyan", attrs=["bold"]))
+            self.cmd_clear(data, option)
         elif command == "help":
-            if len(data) > 0 and data[0] == "-help":
-                print(f"Affiche la liste des commandes disponibles")
-                print(f"Usage: help")
-            else:
-                self.display_help()
+            self.display_help(data, option)
         elif command == "test":
-            if len(data) > 0 and data[0] == "-help":
-                print(f"Affiche les informations de débogage pour une commande")
-                print(f"Usage: test [{colored('command', 'yellow')}] [{colored('options', rgb('purple'))}] [{colored('...', rgb('purple'))}]")
-            else:
-                self.test_command(command, data)
+            self.test_command(data, option)
         elif command == "colorText":
-            if len(data) > 0 and data[0] == "-help":
-                print(f"Affiche un message coloré dans la console")
-                print(f"Usage: colorText [{colored('message', 'yellow')}] [{colored('color', 'purple')}]")
-            if len(data) >= 2:
-                color = data[-1]
-                text = " ".join(data[:-1])
-                try:
-                    rgb_color = rgb(color)
-                    colored_text = self.color_text(text, rgb_color)
-                    print(colored_text)
-                except ValueError as e:
-                    print(e)
-            else:
-                warn(f"Bad request for {colored('colorText', rgb('lightblue'))} command !")
-                self.execute("colorText -help")
+            option["console"] = True
+            self.color_text(data, option)
         elif command == "print":
-            if len(data) > 0 and data[0] == "-help":
-                print(f"Affiche un message dans la console")
-                print(f"Usage: print [message]")
-            if len(data) > 0:
-                print(" ".join(data))
-            else:
-                warn(f"Bad request for {colored('print', rgb('lightblue'))} command !")
-                self.execute("print -help")
+            option["print"] = True
+            option["console"] = True
+            self.color_text(data, option)
+        elif command == "start":
+            self.config.start()
         elif command == "Hello_World":
-            if len(data) > 0 and data[0] == "-help":
-                print(f"Affiche le message 'Hello World!'")
-                print(f"Usage: Hello_World")
-            else:
-                print("Hello World!")
+            print(self.color_text(["Hello World!", "yellow"] + data, option))
         elif command == "exit":
-            if len(data) > 0 and data[0] == "-help":
-                print(f"Quitte le programme")
-                print(f"Usage: exit")
-            else:
-                exit()
+            self.exit(data, option)
         elif command == "date":
             if len(data) > 0 and data[0] == "-help":
                 print(f"Affiche la date et l'heure actuelle")
@@ -649,7 +749,7 @@ class Server:
                         self.getlog(data[0])
                 else:
                     error("No configuration loaded")
-                    warn(f"Bad request for {colored('log', rgb('lightblue'))} command !")
+                    warn(f"Bad request for [{colored('log', rgb('lightblue'))}] command !")
                     self.execute("log -help")
         elif command == "mods":
             self.reloadMods()
