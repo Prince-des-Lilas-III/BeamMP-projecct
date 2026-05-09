@@ -14,7 +14,7 @@
     ],
     "map": "/levels/gridmap_v2/info.json",
     "description": "BeamMp Server",
-    "resourceFolder": "Config\\default\\Resources",
+    "resourceFolder": "Resources",
     "modsFolder": "mods",
     "enableMod": false,
     "ImScaredOfUpdates": true,

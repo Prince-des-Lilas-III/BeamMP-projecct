@@ -31,9 +31,10 @@ def setType(value):
         pass
     try:
         if (value.lower() == "true"):
-            value = True
+            return True
+
         elif (value.lower() == "false"):
-            value = False
+            return False
     except Exception:
         pass
     try:
@@ -182,10 +183,15 @@ class Mod:
                 if mod_zip == self.name_zip:
                     self.name = mod_name
                     break
+    
+    def __str__(self):
+        return f"[{colored(self.name, rgb('yellow'))}]"
+    
 class Config:
     def __init__(self, link, defaultKeys = ""):
         self.link = link
         self.mods = []
+        self.configname = os.path.basename(link)
         
         data_path = os.path.join(self.link, "data.json")
         if os.path.exists(data_path):
@@ -298,34 +304,35 @@ class Config:
 
 
     def printConfig(self):
-        print(f'Configuration: "{colored(self.link, rgb("lightcyan"))}",')
-        print(f'Name: {colored('"' + self.name + '"', rgb("lightgreen"))},')
-        print(f'IP: {colored(self.ip, rgb("yellow"))},')
-        print(f'Port: {colored(self.port, rgb("lightred"))},')
-        print(f'AuthKey: {colored('"' + self.authKey + '"', rgb("lightgreen"))},')
-        print(f'Max Players: {colored(self.maxPlayer, rgb("lightred"))},')
-        print(f'Max Vehicles: {colored(self.maxVehicles, rgb("lightred"))},')
-        print(f'Allow Guest: {colored(self.allowGuest, rgb("blue"))},')
-        print(f'Log Chat: {colored(self.logChat, rgb("blue"))},')
-        print(f'Debug: {colored(self.debug, rgb("blue"))},')
-        print(f'Information Packet: {colored(self.informationPacket, rgb("blue"))},')
+        print(f"Configuration [str(self)]: {str(self)}")
+        print(f'Link [link]: {encodeType(self.link)},')
+        print(f'Name [name]: {encodeType(self.name)},')
+        print(f'IP [ip]: {colored(self.ip, rgb("yellow"))},')
+        print(f'Port [port]: {encodeType(self.port)},')
+        print(f'AuthKey [authKey]: {encodeType(self.authKey )},')
+        print(f'Max Players [maxPlayer]: {encodeType(self.maxPlayer)},')
+        print(f'Max Vehicles [maxVehicles]: {encodeType(self.maxVehicles)},')
+        print(f'Allow Guest [allowGuest]: {encodeType(self.allowGuest)},')
+        print(f'Log Chat [logChat]: {encodeType(self.logChat)},')
+        print(f'Debug [debug]: {encodeType(self.debug)},')
+        print(f'Information Packet [informationPacket]: {encodeType(self.informationPacket)},')
 
-        print("Tags: ", end="")
+        print(f'Tags [tags]: ', end="")
         for tag in self.tags:
-            print(colored('"' + tag + '"', rgb("lightgreen")), end=", ")
+            print(encodeType(tag) + ", ", end="")
         print()
 
-        print(f'Map: {colored('"' + self.map + '"', rgb("lightgreen"))},')
-        print(f"Description: {colored('"' + self.description + '"', rgb("lightgreen"))},")
-        print(f"Resource Folder: {colored('"' + self.resourceFolder + '"', rgb("lightgreen"))},")
-        print(f"Mods Folder: {colored('"' + self.modsFolder + '"', rgb("lightgreen"))},")
-        print(f"Enable Mod: {colored(self.enableMod, rgb("blue"))},")
-        print(f"I'm Scared Of Updates: {colored(self.ImScaredOfUpdates, rgb("blue"))},")
-        print(f"Update Reminder Time: {colored('"' + self.UpdateReminderTime + '"', rgb("lightgreen"))}")
-        print(f"Private: {colored(self.private, rgb("blue"))}")
+        print(f'Map [map]: {encodeType(self.map)},')
+        print(f"Description [description]: {encodeType(self.description)},")
+        print(f"Resource Folder [resourceFolder]: {encodeType(self.resourceFolder)},")
+        print(f"Mods Folder [modsFolder]: {encodeType(self.modsFolder)},")
+        print(f"Enable Mod [enableMod]: {encodeType(self.enableMod)},")
+        print(f"I'm Scared Of Updates [ImScaredOfUpdates]: {encodeType(self.ImScaredOfUpdates)},")
+        print(f"Update Reminder Time [UpdateReminderTime]: {encodeType(self.UpdateReminderTime)}")
+        print(f"Private [private]: {encodeType(self.private)}")
 
     def __str__(self):
-        return self.link
+        return f"[{colored(self.configname, rgb('lightcyan'))}]"
     
     def setTOML(self):
         """Génère une configuration TOML à partir des données de la configuration.
@@ -418,20 +425,20 @@ class Server:
         lastConfig = self.GeneralData.get("lastServeurConfig", "")
         if lastConfig in self.config:
             self.config = self.config[lastConfig]
-            info(f"Last configuration [{colored(str(self.config), rgb('lightcyan'))}] loaded successfully")
+            info(f"Last configuration {str(self.config)} loaded successfully")
         else:
             self.config = self.config.get("default", None)
-            warn(f"No last configuration found, configuration [{colored('default', rgb('lightcyan'))}] used")
+            warn(f"No last configuration found, configuration {str(self.config)} used")
 
         # Initialize server console loop
         while True:
             try:
                 self.execute(input(getDataCommand() + " > "))
             except KeyboardInterrupt:
-                print("\nInterrupted by user")
+                info("\nInterrupted by user")
                 break
             except Exception as e:
-                error(e)
+                error(f"{e}")
 
     def reloadMods(self):
         """Recharge la liste des mods à partir du dossier mods de la configuration.
@@ -666,6 +673,33 @@ class Server:
         else:
             info("Exiting program...")
             exit()
+    
+    def setAuthKey(self, data=[], option={}):
+        """Met à jour la clé d'authentification utilisée pour les configurations.
+
+        Args:
+            data (list): Liste contenant la nouvelle clé d'authentification (data[0] = new auth key)
+            option (dict): Dictionnaire des options, non utilisé pour cette commande
+        """
+        if "help" in option.keys() and option["help"]:
+            print(f"Set authentication key for server configurations")
+            print(f"Usage:")
+            print(f"  > setAuthKey [{colored(new_auth_key, rgb('purple'))}] => Set the authentication key for actual configurations")
+            print(f"Option:")
+            print(f"  {colored('-default', rgb('pink'))} => Set the default authentication key for configurations")
+            print(f"  {colored('-print', rgb('pink'))} => Show the authentication key for configurations")
+        else:
+            assert len(data) == 1, f"Bad Request: {colored('setAuthKey', rgb('lightblue'))} command requires 1 data argument [{colored('new_auth_key', rgb('purple'))}]"
+            new_auth_key = data[0]
+            if ("default" in option.keys() and option["default"]):
+                self.GeneralData["defaultAuthKey"] = new_auth_key
+                with open("data.json", "w", encoding="utf-8") as f:
+                    json.dump(self.GeneralData, f, indent=4)
+                info(f"Default authentication key updated successfully to {colored(new_auth_key, rgb('lightgreen'))}")
+            else:
+                assert type(self.config) == Config, "No configuration loaded"
+                self.config.authKey = new_auth_key
+                self.config.saveData()
 
     def execute(self, cmd):
         """Traite et exécute une commande utilisateur.
